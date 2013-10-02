@@ -1,0 +1,42 @@
+package com.hannesdorfmann.collections;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * This class brings the best of both, {@link List} and {@link Map}. So you can
+ * simply iterate, like you would do with any {@link List} or get a item by his
+ * list position. You can also search for an value by searching for his key
+ * (id), like you would do with any {@link Map} implementation (
+ * {@link #getById(Identifiable)})
+ * 
+ * @author Hannes Dorfmann
+ * 
+ * @param <K>
+ * @param <V>
+ */
+public interface ListMap<K, V extends Identifiable<K>> extends List<V> {
+
+	/**
+	 * Get the value by the key. The access will be as fast as accessing a
+	 * {@link Map}. If there are more elements with the same key in the list,
+	 * than the first one (with the lowest index) will be returned.
+	 * 
+	 * @param id
+	 *            The values id.
+	 * @return
+	 */
+	public V getById(K id);
+
+	/**
+	 * Remove all items in the list that matches have this key. More formally,
+	 * removes all elements with the index i such that (o==null ? get(i)==null :
+	 * o.equals(get(i))) (if such an element exists)
+	 * 
+	 * @param id
+	 * @return The first element that has been found to be removed or null, if
+	 *         there is no such element
+	 */
+	public V removeById(K id);
+
+}
