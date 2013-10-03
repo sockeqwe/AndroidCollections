@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import android.util.LongSparseArray;
+import com.hannesdorfmann.collection.support.v4.util.LongSparseArray;
 
 /**
  * This is a {@link ListMap} implementation that maps Long to a Object. This
@@ -68,9 +68,17 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 	 */
 	@Override
 	public boolean add(V e) {
+
+		V oldValue = idMap.get(e.getId());
+		if (oldValue != null)
+			super.remove(oldValue);
+
 		boolean added = super.add(e);
+
 		if (added)
 			idMap.put(e.getId(), e);
+		else
+			idMap.put(oldValue.getId(), oldValue);
 
 		return added;
 	}
@@ -82,9 +90,16 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 	 * @param element
 	 */
 	@Override
-	public void add(int index, V element) {
-		super.add(index, element);
-		idMap.put(element.getId(), element);
+	public void add(int index, V e) {
+		V oldValue = idMap.get(e.getId());
+		if (oldValue != null) {
+			// there is already an elemenet with the same id
+			super.remove(oldValue);
+		}
+
+		super.add(index, e);
+
+		idMap.put(e.getId(), e);
 	}
 
 	/**
@@ -97,11 +112,10 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 	 */
 	@Override
 	public boolean addAll(Collection<? extends V> c) {
-		boolean added = super.addAll(c);
-		if (added)
-			addToMap(c);
+		for (V v : c)
+			add(v);
 
-		return added;
+		return true;
 	}
 
 	/**
@@ -114,12 +128,12 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 	 */
 	@Override
 	public boolean addAll(int index, Collection<? extends V> c) {
-		boolean added = super.addAll(index, c);
 
-		if (added)
-			addToMap(c);
+		for (V v : c) {
+			add(index++, v);
+		}
 
-		return added;
+		return true;
 
 	}
 
@@ -185,6 +199,23 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 			idMap.remove(((V) element).getId());
 
 		return removed;
+	}
+
+	@Override
+	public V set(int position, V e) {
+
+		if (position >= size())
+			throw new IndexOutOfBoundsException(
+					"Try to replace element with index " + position
+							+ " but the size of this list is " + size());
+
+		V previous = get(position);
+		idMap.remove(previous.getId());
+
+		add(position, e);
+
+		return previous;
+
 	}
 
 }

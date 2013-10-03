@@ -192,7 +192,7 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	public V remove(int index) {
 		V v = super.remove(index);
 
-		if (v != null && !super.contains(v)) {
+		if (v != null) {
 			idMap.remove(v.getId());
 		}
 
@@ -211,8 +211,7 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	public boolean remove(Object element) {
 		boolean removed = super.remove(element);
 
-		if (removed && !super.contains(element)
-				&& element instanceof Identifiable<?>)
+		if (removed && element instanceof Identifiable<?>)
 			idMap.remove(((V) element).getId());
 
 		return removed;
