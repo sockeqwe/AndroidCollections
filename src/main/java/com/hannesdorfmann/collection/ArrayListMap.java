@@ -1,35 +1,37 @@
-package com.hannesdorfmann.collections;
+package com.hannesdorfmann.collection;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
-import android.util.LongSparseArray;
-
 /**
- * This is a {@link ListMap} implementation that maps Long to a Object. This
- * implementation uses a
- * {@link com.hannesdorfmann.collections.support.v4.util.LongSparseArray} and an
- * {@link ArrayList} as internal data structure.
- * 
+ * This {@link ListMap} implementation uses {@link ArrayList} and
+ * {@link HashMap} and its not thread safe
  * 
  * @author Hannes Dorfmann
  * 
+ * @param <K>
+ *            The Key
  * @param <V>
+ *            The Value
  */
-public class LongArrayListMap<V extends Identifiable<Long>> extends
-		ArrayList<V> implements ListMap<Long, V> {
+public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
+		implements ListMap<K, V> {
 
-	private static final long serialVersionUID = 2175336878139990835L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4630450968498105177L;
 
-	private final LongSparseArray<V> idMap;
+	private final Map<K, V> idMap;
 
 	/**
 	 * Creates a new empty empty {@link ArrayListMap}
 	 */
-	public LongArrayListMap() {
+	public ArrayListMap() {
 		super();
-		idMap = new LongSparseArray<V>();
+		idMap = new HashMap<K, V>();
 	}
 
 	/**
@@ -39,15 +41,15 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 	 * 
 	 * @param c
 	 */
-	public LongArrayListMap(Collection<? extends V> c) {
+	public ArrayListMap(Collection<? extends V> c) {
 		super(c);
-		idMap = new LongSparseArray<V>(c.size());
+		idMap = new HashMap<K, V>(c.size());
 		addToMap(c);
 	}
 
-	public LongArrayListMap(int initialCapacity) {
+	public ArrayListMap(int initialCapacity) {
 		super(initialCapacity);
-		idMap = new LongSparseArray<V>(initialCapacity);
+		idMap = new HashMap<K, V>(initialCapacity);
 	}
 
 	/**
@@ -57,7 +59,8 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 	 */
 	private void addToMap(Collection<? extends V> c) {
 		for (V v : c)
-			idMap.put(v.getId(), v);
+			if (!idMap.containsKey(v.getId()))
+				idMap.put(v.getId(), v);
 	}
 
 	/**
@@ -68,9 +71,17 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 	 */
 	@Override
 	public boolean add(V e) {
+
+		V oldValue = idMap.get(e.getId());
+		if (oldValue != null)
+			super.remove(oldValue);
+
 		boolean added = super.add(e);
+
 		if (added)
 			idMap.put(e.getId(), e);
+		else
+			idMap.put(oldValue.getId(), oldValue);
 
 		return added;
 	}
@@ -82,9 +93,22 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 	 * @param element
 	 */
 	@Override
-	public void add(int index, V element) {
-		super.add(index, element);
-		idMap.put(element.getId(), element);
+	public void add(int index, V e) {
+
+		V oldValue = idMap.get(e.getId());
+		if (oldValue != null) {
+			// there is already an elemenet with the same id
+			int oldIndex = super.indexOf(oldValue);
+
+			super.remove(oldIndex);
+
+			if (index > oldIndex)
+				index--;
+		}
+
+		super.add(index, e);
+
+		idMap.put(e.getId(), e);
 	}
 
 	/**
@@ -97,11 +121,11 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 	 */
 	@Override
 	public boolean addAll(Collection<? extends V> c) {
-		boolean added = super.addAll(c);
-		if (added)
-			addToMap(c);
 
-		return added;
+		for (V v : c)
+			add(v);
+
+		return true;
 	}
 
 	/**
@@ -114,13 +138,12 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 	 */
 	@Override
 	public boolean addAll(int index, Collection<? extends V> c) {
-		boolean added = super.addAll(index, c);
 
-		if (added)
-			addToMap(c);
+		for (V v : c) {
+			add(index++, v);
+		}
 
-		return added;
-
+		return true;
 	}
 
 	/**
@@ -133,17 +156,15 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 	}
 
 	@Override
-	public V getById(Long id) {
+	public V getById(K id) {
 		return idMap.get(id);
 	}
 
 	@Override
-	public V removeById(Long id) {
-
-		V removed = idMap.get(id);
+	public V removeById(K id) {
+		V removed = idMap.remove(id);
 
 		if (removed != null) {
-			idMap.delete(id);
 			int index;
 			while ((index = super.indexOf(removed)) >= 0)
 				super.remove(index);
@@ -162,8 +183,9 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 	public V remove(int index) {
 		V v = super.remove(index);
 
-		if (v != null && !super.contains(v))
+		if (v != null && !super.contains(v)) {
 			idMap.remove(v.getId());
+		}
 
 		return v;
 	}

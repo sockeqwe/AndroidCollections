@@ -9,9 +9,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.hannesdorfmann.collections.ArrayListMap;
-import com.hannesdorfmann.collections.ListMap;
-
 public class ArrayListMapTest {
 
 	@Test
@@ -64,16 +61,24 @@ public class ArrayListMapTest {
 			list.add(d2);
 			inserted.add(d2);
 
-			assertTrue(list.contains(d));
+			assertFalse(list.contains(d));
 			assertTrue(list.contains(d2));
-			assertTrue(list.getById(d.getId()) == d);
-			assertFalse(list.getById(d2.getId()) == d2);
-			assertFalse(list.getById(d.getId()) == d2);
-			assertTrue(list.getById(Integer.toString(i)) == d);
+			assertFalse(list.getById(d.getId()) == d);
+			assertTrue(list.getById(d2.getId()) == d2);
+			assertTrue(list.getById(d.getId()) == d2);
+			assertTrue(list.getById(Integer.toString(i)) == d2);
 
 			// remove original
+			list.remove(d);
+			inserted.remove(d);
 
 		}
+
+		inserted.clear();
+		list.clear();
+
+		assertTrue(list.isEmpty());
+		assertTrue(list.size() == 0);
 
 	}
 }

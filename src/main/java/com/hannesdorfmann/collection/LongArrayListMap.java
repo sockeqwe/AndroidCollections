@@ -1,37 +1,35 @@
-package com.hannesdorfmann.collections;
+package com.hannesdorfmann.collection;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
+import android.util.LongSparseArray;
+
 /**
- * This {@link ListMap} implementation uses {@link ArrayList} and
- * {@link HashMap} and its not thread safe
+ * This is a {@link ListMap} implementation that maps Long to a Object. This
+ * implementation uses a
+ * {@link com.hannesdorfmann.collection.support.v4.util.LongSparseArray} and an
+ * {@link ArrayList} as internal data structure.
+ * 
  * 
  * @author Hannes Dorfmann
  * 
- * @param <K>
- *            The Key
  * @param <V>
- *            The Value
  */
-public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
-		implements ListMap<K, V> {
+public class LongArrayListMap<V extends Identifiable<Long>> extends
+		ArrayList<V> implements ListMap<Long, V> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4630450968498105177L;
+	private static final long serialVersionUID = 2175336878139990835L;
 
-	private final Map<K, V> idMap;
+	private final LongSparseArray<V> idMap;
 
 	/**
 	 * Creates a new empty empty {@link ArrayListMap}
 	 */
-	public ArrayListMap() {
+	public LongArrayListMap() {
 		super();
-		idMap = new HashMap<K, V>();
+		idMap = new LongSparseArray<V>();
 	}
 
 	/**
@@ -41,15 +39,15 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	 * 
 	 * @param c
 	 */
-	public ArrayListMap(Collection<? extends V> c) {
+	public LongArrayListMap(Collection<? extends V> c) {
 		super(c);
-		idMap = new HashMap<K, V>(c.size());
+		idMap = new LongSparseArray<V>(c.size());
 		addToMap(c);
 	}
 
-	public ArrayListMap(int initialCapacity) {
+	public LongArrayListMap(int initialCapacity) {
 		super(initialCapacity);
-		idMap = new HashMap<K, V>(initialCapacity);
+		idMap = new LongSparseArray<V>(initialCapacity);
 	}
 
 	/**
@@ -59,8 +57,7 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	 */
 	private void addToMap(Collection<? extends V> c) {
 		for (V v : c)
-			if (!idMap.containsKey(v.getId()))
-				idMap.put(v.getId(), v);
+			idMap.put(v.getId(), v);
 	}
 
 	/**
@@ -72,7 +69,7 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	@Override
 	public boolean add(V e) {
 		boolean added = super.add(e);
-		if (added && !idMap.containsKey(e.getId()))
+		if (added)
 			idMap.put(e.getId(), e);
 
 		return added;
@@ -87,9 +84,7 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	@Override
 	public void add(int index, V element) {
 		super.add(index, element);
-
-		if (!idMap.containsKey(element.getId()))
-			idMap.put(element.getId(), element);
+		idMap.put(element.getId(), element);
 	}
 
 	/**
@@ -138,15 +133,17 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	}
 
 	@Override
-	public V getById(K id) {
+	public V getById(Long id) {
 		return idMap.get(id);
 	}
 
 	@Override
-	public V removeById(K id) {
-		V removed = idMap.remove(id);
+	public V removeById(Long id) {
+
+		V removed = idMap.get(id);
 
 		if (removed != null) {
+			idMap.delete(id);
 			int index;
 			while ((index = super.indexOf(removed)) >= 0)
 				super.remove(index);

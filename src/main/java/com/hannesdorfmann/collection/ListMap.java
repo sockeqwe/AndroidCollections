@@ -1,4 +1,4 @@
-package com.hannesdorfmann.collections;
+package com.hannesdorfmann.collection;
 
 import java.util.List;
 import java.util.Map;

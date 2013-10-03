@@ -1,4 +1,4 @@
-package com.hannesdorfmann.collections.support.v4.util;
+package com.hannesdorfmann.collection.support.v4.util;
 
 /*
  * Copyright (C) 2009 The Android Open Source Project

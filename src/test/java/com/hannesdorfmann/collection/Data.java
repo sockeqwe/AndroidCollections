@@ -1,7 +1,7 @@
 package com.hannesdorfmann.collection;
 
-import com.hannesdorfmann.collections.Identifiable;
-import com.hannesdorfmann.collections.ListMap;
+import com.hannesdorfmann.collection.Identifiable;
+import com.hannesdorfmann.collection.ListMap;
 
 /**
  * Simple class to do some unit testing on {@link ListMap} implementations

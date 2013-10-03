@@ -1,4 +1,4 @@
-package com.hannesdorfmann.collections;
+package com.hannesdorfmann.collection;
 
 public interface Identifiable<T> {
 
