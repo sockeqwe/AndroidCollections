@@ -56,25 +56,14 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	 * @param c
 	 */
 	public ArrayListMap(Collection<? extends V> c) {
-		super(c);
 		idMap = new HashMap<K, V>(c.size());
-		initialAddToMap(c);
+		for (V v : c)
+			add(v);
 	}
 
 	public ArrayListMap(int initialCapacity) {
 		super(initialCapacity);
 		idMap = new HashMap<K, V>(initialCapacity);
-	}
-
-	/**
-	 * Put a collection to the internal {@link Map}
-	 * 
-	 * @param c
-	 */
-	private void initialAddToMap(Collection<? extends V> c) {
-		for (V v : c)
-			if (!idMap.containsKey(v.getId()))
-				idMap.put(v.getId(), v);
 	}
 
 	/**
@@ -86,18 +75,22 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	@Override
 	public boolean add(V e) {
 
-		V oldValue = idMap.get(e.getId());
-		if (oldValue != null)
-			super.remove(oldValue);
+		if (e.getId() != null) {
 
-		boolean added = super.add(e);
+			V oldValue = idMap.get(e.getId());
+			if (oldValue != null)
+				super.remove(oldValue);
 
-		if (added)
-			idMap.put(e.getId(), e);
-		else
-			idMap.put(oldValue.getId(), oldValue);
+			boolean added = super.add(e);
 
-		return added;
+			if (added)
+				idMap.put(e.getId(), e);
+			else
+				idMap.put(oldValue.getId(), oldValue);
+
+			return added;
+		} else
+			return super.add(e);
 	}
 
 	/**
@@ -109,15 +102,18 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	@Override
 	public void add(int index, V e) {
 
-		V oldValue = idMap.get(e.getId());
-		if (oldValue != null) {
-			// there is already an elemenet with the same id
-			super.remove(oldValue);
-		}
+		if (e.getId() != null) {
+			V oldValue = idMap.get(e.getId());
+			if (oldValue != null) {
+				// there is already an elemenet with the same id
+				super.remove(oldValue);
+			}
 
-		super.add(index, e);
+			super.add(index, e);
 
-		idMap.put(e.getId(), e);
+			idMap.put(e.getId(), e);
+		} else
+			super.add(index, e);
 	}
 
 	/**
@@ -148,9 +144,8 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	@Override
 	public boolean addAll(int index, Collection<? extends V> c) {
 
-		for (V v : c) {
+		for (V v : c)
 			add(index++, v);
-		}
 
 		return true;
 	}
@@ -192,7 +187,7 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	public V remove(int index) {
 		V v = super.remove(index);
 
-		if (v != null) {
+		if (v != null && v.getId() != null) {
 			idMap.remove(v.getId());
 		}
 
@@ -211,7 +206,8 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	public boolean remove(Object element) {
 		boolean removed = super.remove(element);
 
-		if (removed && element instanceof Identifiable<?>)
+		if (removed && element instanceof Identifiable<?>
+				&& ((V) element).getId() != null)
 			idMap.remove(((V) element).getId());
 
 		return removed;
@@ -221,7 +217,7 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	@Override
 	public boolean contains(Object value) {
 
-		if (value instanceof Identifiable) {
+		if (value instanceof Identifiable && ((V) value).getId() != null) {
 			V found = idMap.get(((Identifiable<K>) value).getId());
 			if (found == value)
 				return true;
@@ -247,7 +243,9 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 							+ " but the size of this list is " + size());
 
 		V previous = get(position);
-		idMap.remove(previous.getId());
+
+		if (e.getId() != null)
+			idMap.remove(previous.getId());
 
 		add(position, e);
 

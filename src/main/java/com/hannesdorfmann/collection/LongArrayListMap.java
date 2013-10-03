@@ -2,7 +2,6 @@ package com.hannesdorfmann.collection;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
 import com.hannesdorfmann.collection.support.v4.util.LongSparseArray;
 
@@ -42,22 +41,15 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 	public LongArrayListMap(Collection<? extends V> c) {
 		super(c);
 		idMap = new LongSparseArray<V>(c.size());
-		addToMap(c);
+
+		for (V v : c)
+			add(v);
+
 	}
 
 	public LongArrayListMap(int initialCapacity) {
 		super(initialCapacity);
 		idMap = new LongSparseArray<V>(initialCapacity);
-	}
-
-	/**
-	 * Put a collection to the internal {@link Map}
-	 * 
-	 * @param c
-	 */
-	private void addToMap(Collection<? extends V> c) {
-		for (V v : c)
-			idMap.put(v.getId(), v);
 	}
 
 	/**
@@ -69,18 +61,22 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 	@Override
 	public boolean add(V e) {
 
-		V oldValue = idMap.get(e.getId());
-		if (oldValue != null)
-			super.remove(oldValue);
+		if (e.getId() != null) {
 
-		boolean added = super.add(e);
+			V oldValue = idMap.get(e.getId());
+			if (oldValue != null)
+				super.remove(oldValue);
 
-		if (added)
-			idMap.put(e.getId(), e);
-		else
-			idMap.put(oldValue.getId(), oldValue);
+			boolean added = super.add(e);
 
-		return added;
+			if (added)
+				idMap.put(e.getId(), e);
+			else
+				idMap.put(oldValue.getId(), oldValue);
+
+			return added;
+		} else
+			return super.add(e);
 	}
 
 	/**
@@ -91,15 +87,20 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 	 */
 	@Override
 	public void add(int index, V e) {
-		V oldValue = idMap.get(e.getId());
-		if (oldValue != null) {
-			// there is already an elemenet with the same id
-			super.remove(oldValue);
-		}
 
-		super.add(index, e);
+		if (e.getId() != null) {
 
-		idMap.put(e.getId(), e);
+			V oldValue = idMap.get(e.getId());
+			if (oldValue != null) {
+				// there is already an elemenet with the same id
+				super.remove(oldValue);
+			}
+
+			super.add(index, e);
+
+			idMap.put(e.getId(), e);
+		} else
+			super.add(index, e);
 	}
 
 	/**
@@ -194,8 +195,8 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 	public boolean remove(Object element) {
 		boolean removed = super.remove(element);
 
-		if (removed && !super.contains(element)
-				&& element instanceof Identifiable<?>)
+		if (removed && element instanceof Identifiable<?>
+				&& ((V) element).getId() != null)
 			idMap.remove(((V) element).getId());
 
 		return removed;
@@ -209,12 +210,15 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 					"Try to replace element with index " + position
 							+ " but the size of this list is " + size());
 
-		V previous = get(position);
-		idMap.remove(previous.getId());
+		if (e.getId() != null) {
+			V previous = get(position);
+			idMap.remove(previous.getId());
 
-		add(position, e);
+			add(position, e);
 
-		return previous;
+			return previous;
+		} else
+			return super.set(position, e);
 
 	}
 
