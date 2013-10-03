@@ -7,7 +7,21 @@ import java.util.Map;
 
 /**
  * This {@link ListMap} implementation uses {@link ArrayList} and
- * {@link HashMap} and its not thread safe
+ * {@link HashMap} and its not thread safe.
+ * 
+ * <p>
+ * Unlike a normal List implementation, every item is unique ( proved by
+ * {@link Identifiable#getId()} in this list. So its more like a Set that
+ * contains his insert order than a List.
+ * </p>
+ * 
+ * <p>
+ * So this kind of {@link ListMap} gives you a {@link HashMap} to retrieve a
+ * element by his id (key) and a {@link ArrayList} at the same time to get a
+ * item very fast by his position in the list. So you will have O(1) for
+ * retrieving a element by his id and O(1) to access item at a certain position
+ * (index) in the list.
+ * </p>
  * 
  * @author Hannes Dorfmann
  * 
@@ -44,7 +58,7 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	public ArrayListMap(Collection<? extends V> c) {
 		super(c);
 		idMap = new HashMap<K, V>(c.size());
-		addToMap(c);
+		initialAddToMap(c);
 	}
 
 	public ArrayListMap(int initialCapacity) {
@@ -57,7 +71,7 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	 * 
 	 * @param c
 	 */
-	private void addToMap(Collection<? extends V> c) {
+	private void initialAddToMap(Collection<? extends V> c) {
 		for (V v : c)
 			if (!idMap.containsKey(v.getId()))
 				idMap.put(v.getId(), v);
@@ -209,4 +223,17 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 		return removed;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean contains(Object value) {
+
+		if (value instanceof Identifiable) {
+			V found = idMap.get(((Identifiable<K>) value).getId());
+			if (found == value)
+				return true;
+		}
+
+		return super.contains(value);
+
+	}
 }
