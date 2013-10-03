@@ -1,7 +1,5 @@
 package com.hannesdorfmann.collection;
 
-import com.hannesdorfmann.collection.Identifiable;
-import com.hannesdorfmann.collection.ListMap;
 
 /**
  * Simple class to do some unit testing on {@link ListMap} implementations
@@ -9,16 +7,16 @@ import com.hannesdorfmann.collection.ListMap;
  * @author Hannes Dorfmann
  * 
  */
-public class Data implements Identifiable<String> {
+public class Data<T> implements Identifiable<T> {
 
-	public String id;
+	public T id;
 
-	public Data(String id) {
+	public Data(T id) {
 		this.id = id;
 	}
 
 	@Override
-	public String getId() {
+	public T getId() {
 		return id;
 	}
 

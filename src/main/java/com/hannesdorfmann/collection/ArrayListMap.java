@@ -112,12 +112,7 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 		V oldValue = idMap.get(e.getId());
 		if (oldValue != null) {
 			// there is already an elemenet with the same id
-			int oldIndex = super.indexOf(oldValue);
-
-			super.remove(oldIndex);
-
-			if (index > oldIndex)
-				index--;
+			super.remove(oldValue);
 		}
 
 		super.add(index, e);
@@ -234,6 +229,30 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 		}
 
 		return super.contains(value);
+
+	}
+
+	/**
+	 * Replaces the
+	 * 
+	 * @param position
+	 * @param e
+	 * @return
+	 */
+	@Override
+	public V set(int position, V e) {
+
+		if (position >= size())
+			throw new IndexOutOfBoundsException(
+					"Try to replace element with index " + position
+							+ " but the size of this list is " + size());
+
+		V previous = get(position);
+		idMap.remove(previous.getId());
+
+		add(position, e);
+
+		return previous;
 
 	}
 }
