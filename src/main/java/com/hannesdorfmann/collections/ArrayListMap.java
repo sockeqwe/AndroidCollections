@@ -59,7 +59,8 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	 */
 	private void addToMap(Collection<? extends V> c) {
 		for (V v : c)
-			idMap.put(v.getId(), v);
+			if (!idMap.containsKey(v.getId()))
+				idMap.put(v.getId(), v);
 	}
 
 	/**
@@ -71,7 +72,7 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	@Override
 	public boolean add(V e) {
 		boolean added = super.add(e);
-		if (added)
+		if (added && !idMap.containsKey(e.getId()))
 			idMap.put(e.getId(), e);
 
 		return added;
@@ -86,7 +87,9 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	@Override
 	public void add(int index, V element) {
 		super.add(index, element);
-		idMap.put(element.getId(), element);
+
+		if (!idMap.containsKey(element.getId()))
+			idMap.put(element.getId(), element);
 	}
 
 	/**

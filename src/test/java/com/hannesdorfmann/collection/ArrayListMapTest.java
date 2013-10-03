@@ -20,13 +20,15 @@ public class ArrayListMapTest {
 		ListMap<String, Data> list = new ArrayListMap<String, Data>();
 		List<Data> inserted = new ArrayList<Data>();
 
-		int tests = 100000;
+		int tests = 10000;
 		// Insert
 		for (int i = 0; i < tests; i++) {
 
 			Data d = new Data(Integer.toString(i));
 			list.add(d);
 			inserted.add(d);
+			assertTrue(list.contains(d));
+			assertTrue(list.getById(d.getId()) == d);
 
 		}
 
@@ -48,5 +50,30 @@ public class ArrayListMapTest {
 
 		assertTrue(list.size() == 0);
 		assertTrue(list.isEmpty());
+
+		inserted.clear();
+
+		// Try to insert items with same key
+		for (int i = 0; i < tests; i++) {
+
+			Data d = new Data(Integer.toString(i));
+			list.add(d);
+			inserted.add(d);
+
+			Data d2 = new Data(Integer.toString(i));
+			list.add(d2);
+			inserted.add(d2);
+
+			assertTrue(list.contains(d));
+			assertTrue(list.contains(d2));
+			assertTrue(list.getById(d.getId()) == d);
+			assertFalse(list.getById(d2.getId()) == d2);
+			assertFalse(list.getById(d.getId()) == d2);
+			assertTrue(list.getById(Integer.toString(i)) == d);
+
+			// remove original
+
+		}
+
 	}
 }
