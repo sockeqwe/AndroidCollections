@@ -13,6 +13,8 @@
     </properties>
 
     <dependencies>
+        
+        <!--  
         <dependency>
             <groupId>com.google.android</groupId>
             <artifactId>android</artifactId>
@@ -26,10 +28,8 @@
                 <artifactId>android-test</artifactId>
                 <version>${platform.version}</version>
         </dependency>
-            
-        
    
-        
+        -->
         
       </dependencies>
     

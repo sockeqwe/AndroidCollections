@@ -11,8 +11,8 @@ import java.util.Map;
  * 
  * <p>
  * Unlike a normal List implementation, every item is unique ( proved by
- * {@link Identifiable#getKeyIdentifier()} in this list. So its more like a Set that
- * contains his insert order than a List.
+ * {@link Identifiable#getKeyIdentifier()} in this list. So its more like a Set
+ * that contains his insert order than a List.
  * </p>
  * 
  * <p>
@@ -217,7 +217,8 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	@Override
 	public boolean contains(Object value) {
 
-		if (value instanceof Identifiable && ((V) value).getKeyIdentifier() != null) {
+		if (value instanceof Identifiable
+				&& ((V) value).getKeyIdentifier() != null) {
 			V found = idMap.get(((Identifiable<K>) value).getKeyIdentifier());
 			if (found == value)
 				return true;
