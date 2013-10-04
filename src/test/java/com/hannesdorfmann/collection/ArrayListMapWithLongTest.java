@@ -1,23 +1,18 @@
 package com.hannesdorfmann.collection;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import junit.framework.TestCase;
 
-public class ArrayListMapWithLongTest {
+public class ArrayListMapWithLongTest extends TestCase {
 
-	@Test
 	public void test() {
 
 		ListMap<Long, Data<Long>> list = new ArrayListMap<Long, Data<Long>>();
 		List<Data<Long>> inserted = new ArrayList<Data<Long>>();
 
-		int tests = 100000;
+		int tests = 10000;
 		// Insert
 		for (long i = 0; i < tests; i++) {
 
@@ -120,6 +115,15 @@ public class ArrayListMapWithLongTest {
 
 		list.set(list.size() - 1, d);
 		assertTrue(list.get(list.size() - 1) == d);
+
+		// test for null values
+		for (int i = 0; i < 1000; i++) {
+			int oldSize = list.size();
+			d = new Data<Long>(null);
+			list.add(d);
+			assertTrue(list.size() == oldSize + 1);
+			assertTrue(list.get(oldSize) == d);
+		}
 
 	}
 }

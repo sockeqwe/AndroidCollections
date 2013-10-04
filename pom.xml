@@ -1,9 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.hannesdorfmann</groupId>
-  <artifactId>collections</artifactId>
+  <artifactId>collection</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <name>collections</name>
+  <name>collection</name>
+  <packaging>jar</packaging>
   
   
    <properties>
@@ -20,7 +21,17 @@
         </dependency>
         
         
-        </dependencies>
+        <dependency>
+                <groupId>com.google.android</groupId>
+                <artifactId>android-test</artifactId>
+                <version>${platform.version}</version>
+        </dependency>
+            
+        
+   
+        
+        
+      </dependencies>
     
     
 
@@ -31,7 +42,7 @@
             <plugin>
                 <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                 <artifactId>android-maven-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>3.7.0</version>
                 <configuration>
                     <androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
                     <assetsDirectory>${project.basedir}/assets</assetsDirectory>
@@ -41,6 +52,9 @@
                         <platform>16</platform>
                     </sdk>
                    <undeployBeforeDeploy>true</undeployBeforeDeploy>
+                   <test>
+                        <testSize>small</testSize>
+                   </test>
                 </configuration>
                 <extensions>true</extensions>
             </plugin>
@@ -55,15 +69,17 @@
                 </configuration>
             </plugin>
             
-            <!-- Test -->
             <plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
 		        <artifactId>maven-surefire-plugin</artifactId>
 		        <version>2.14.1</version>
+		        <!--  
 		        <configuration>
 		          <skipTests>false</skipTests>
 		        </configuration>
+		        -->
             </plugin>
+
             
             <!-- Generate a single jar with all dependencies: mvn clean compile assembly:single -->
              <plugin>
@@ -91,7 +107,8 @@
 			  </executions>
 			</plugin>
 			
-		     <!-- Java Doc as Jar -->
+			
+		     <!-- Java Doc as Jar -->    
 			<plugin>
 			  <groupId>org.apache.maven.plugins</groupId>
 			  <artifactId>maven-javadoc-plugin</artifactId>
@@ -104,8 +121,9 @@
 			    </execution>
 			  </executions>
 			</plugin>
-		                        
+		                    
         </plugins>
     </build>
+
         
 </project>

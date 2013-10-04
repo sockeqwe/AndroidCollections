@@ -1,17 +1,12 @@
 package com.hannesdorfmann.collection;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import junit.framework.TestCase;
 
-public class ArrayListMapTest {
+public class ArrayListMapTest extends TestCase {
 
-	@Test
 	public void test() {
 
 		ListMap<String, Data<String>> list = new ArrayListMap<String, Data<String>>();
@@ -120,6 +115,15 @@ public class ArrayListMapTest {
 
 		list.set(list.size() - 1, d);
 		assertTrue(list.get(list.size() - 1) == d);
+
+		// test for null values
+		for (int i = 0; i < 1000; i++) {
+			int oldSize = list.size();
+			d = new Data<String>(null);
+			list.add(d);
+			assertTrue(list.size() == oldSize + 1);
+			assertTrue(list.get(oldSize) == d);
+		}
 
 	}
 }
