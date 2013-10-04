@@ -11,7 +11,7 @@ import java.util.Map;
  * 
  * <p>
  * Unlike a normal List implementation, every item is unique ( proved by
- * {@link Identifiable#getId()} in this list. So its more like a Set that
+ * {@link Identifiable#getKeyIdentifier()} in this list. So its more like a Set that
  * contains his insert order than a List.
  * </p>
  * 
@@ -75,18 +75,18 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	@Override
 	public boolean add(V e) {
 
-		if (e.getId() != null) {
+		if (e.getKeyIdentifier() != null) {
 
-			V oldValue = idMap.get(e.getId());
+			V oldValue = idMap.get(e.getKeyIdentifier());
 			if (oldValue != null)
 				super.remove(oldValue);
 
 			boolean added = super.add(e);
 
 			if (added)
-				idMap.put(e.getId(), e);
+				idMap.put(e.getKeyIdentifier(), e);
 			else
-				idMap.put(oldValue.getId(), oldValue);
+				idMap.put(oldValue.getKeyIdentifier(), oldValue);
 
 			return added;
 		} else
@@ -102,8 +102,8 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	@Override
 	public void add(int index, V e) {
 
-		if (e.getId() != null) {
-			V oldValue = idMap.get(e.getId());
+		if (e.getKeyIdentifier() != null) {
+			V oldValue = idMap.get(e.getKeyIdentifier());
 			if (oldValue != null) {
 				// there is already an elemenet with the same id
 				super.remove(oldValue);
@@ -111,7 +111,7 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 
 			super.add(index, e);
 
-			idMap.put(e.getId(), e);
+			idMap.put(e.getKeyIdentifier(), e);
 		} else
 			super.add(index, e);
 	}
@@ -187,8 +187,8 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	public V remove(int index) {
 		V v = super.remove(index);
 
-		if (v != null && v.getId() != null) {
-			idMap.remove(v.getId());
+		if (v != null && v.getKeyIdentifier() != null) {
+			idMap.remove(v.getKeyIdentifier());
 		}
 
 		return v;
@@ -207,8 +207,8 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 		boolean removed = super.remove(element);
 
 		if (removed && element instanceof Identifiable<?>
-				&& ((V) element).getId() != null)
-			idMap.remove(((V) element).getId());
+				&& ((V) element).getKeyIdentifier() != null)
+			idMap.remove(((V) element).getKeyIdentifier());
 
 		return removed;
 	}
@@ -217,8 +217,8 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	@Override
 	public boolean contains(Object value) {
 
-		if (value instanceof Identifiable && ((V) value).getId() != null) {
-			V found = idMap.get(((Identifiable<K>) value).getId());
+		if (value instanceof Identifiable && ((V) value).getKeyIdentifier() != null) {
+			V found = idMap.get(((Identifiable<K>) value).getKeyIdentifier());
 			if (found == value)
 				return true;
 		}
@@ -244,8 +244,8 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 
 		V previous = get(position);
 
-		if (e.getId() != null)
-			idMap.remove(previous.getId());
+		if (e.getKeyIdentifier() != null)
+			idMap.remove(previous.getKeyIdentifier());
 
 		add(position, e);
 

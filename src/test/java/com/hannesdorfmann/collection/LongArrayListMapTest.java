@@ -25,7 +25,7 @@ public class LongArrayListMapTest {
 			list.add(d);
 			inserted.add(d);
 			assertTrue(list.contains(d));
-			assertTrue(list.getById(d.getId()) == d);
+			assertTrue(list.getById(d.getKeyIdentifier()) == d);
 
 		}
 
@@ -39,10 +39,10 @@ public class LongArrayListMapTest {
 		// remove inserted
 		for (Data<Long> d : inserted) {
 
-			list.removeById(d.getId());
+			list.removeById(d.getKeyIdentifier());
 
 			assertFalse(list.contains(d));
-			assertNull(list.getById(d.getId()));
+			assertNull(list.getById(d.getKeyIdentifier()));
 		}
 
 		assertTrue(list.size() == 0);
@@ -63,9 +63,9 @@ public class LongArrayListMapTest {
 
 			assertFalse(list.contains(d));
 			assertTrue(list.contains(d2));
-			assertFalse(list.getById(d.getId()) == d);
-			assertTrue(list.getById(d2.getId()) == d2);
-			assertTrue(list.getById(d.getId()) == d2);
+			assertFalse(list.getById(d.getKeyIdentifier()) == d);
+			assertTrue(list.getById(d2.getKeyIdentifier()) == d2);
+			assertTrue(list.getById(d.getKeyIdentifier()) == d2);
 			assertTrue(list.getById(i) == d2);
 
 			// remove original

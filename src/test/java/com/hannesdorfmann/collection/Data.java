@@ -16,7 +16,7 @@ public class Data<T> implements Identifiable<T> {
 	}
 
 	@Override
-	public T getId() {
+	public T getKeyIdentifier() {
 		return id;
 	}
 
