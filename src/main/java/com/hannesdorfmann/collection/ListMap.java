@@ -8,14 +8,14 @@ import java.util.Map;
  * simply iterate, like you would do with any {@link List} or get a item by his
  * list position. You can also search for an value by searching for his key
  * (id), like you would do with any {@link Map} implementation (
- * {@link #getById(Identifiable)})
+ * {@link #getById(Mappable)})
  * 
  * @author Hannes Dorfmann
  * 
  * @param <K>
  * @param <V>
  */
-public interface ListMap<K, V extends Identifiable<K>> extends List<V> {
+public interface ListMap<K, V extends Mappable<K>> extends List<V> {
 
 	/**
 	 * Get the value by the key. The access will be as fast as accessing a

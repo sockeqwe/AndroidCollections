@@ -1,6 +1,6 @@
 package com.hannesdorfmann.collection;
 
-public interface Identifiable<T> {
+public interface Mappable<T> {
 
 	public T getKeyIdentifier();
 

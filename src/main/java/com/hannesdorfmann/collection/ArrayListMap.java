@@ -11,7 +11,7 @@ import java.util.Map;
  * 
  * <p>
  * Unlike a normal List implementation, every item is unique ( proved by
- * {@link Identifiable#getKeyIdentifier()} in this list. So its more like a Set
+ * {@link Mappable#getKeyIdentifier()} in this list. So its more like a Set
  * that contains his insert order than a List.
  * </p>
  * 
@@ -30,7 +30,7 @@ import java.util.Map;
  * @param <V>
  *            The Value
  */
-public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
+public class ArrayListMap<K, V extends Mappable<K>> extends ArrayList<V>
 		implements ListMap<K, V> {
 
 	/**
@@ -206,7 +206,7 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	public boolean remove(Object element) {
 		boolean removed = super.remove(element);
 
-		if (removed && element instanceof Identifiable<?>
+		if (removed && element instanceof Mappable<?>
 				&& ((V) element).getKeyIdentifier() != null)
 			idMap.remove(((V) element).getKeyIdentifier());
 
@@ -217,9 +217,9 @@ public class ArrayListMap<K, V extends Identifiable<K>> extends ArrayList<V>
 	@Override
 	public boolean contains(Object value) {
 
-		if (value instanceof Identifiable
+		if (value instanceof Mappable
 				&& ((V) value).getKeyIdentifier() != null) {
-			V found = idMap.get(((Identifiable<K>) value).getKeyIdentifier());
+			V found = idMap.get(((Mappable<K>) value).getKeyIdentifier());
 			if (found == value)
 				return true;
 		}

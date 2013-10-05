@@ -16,7 +16,7 @@ import com.hannesdorfmann.collection.support.v4.util.LongSparseArray;
  * 
  * @param <V>
  */
-public class LongArrayListMap<V extends Identifiable<Long>> extends
+public class LongArrayListMap<V extends Mappable<Long>> extends
 		ArrayList<V> implements ListMap<Long, V> {
 
 	private static final long serialVersionUID = 2175336878139990835L;
@@ -195,7 +195,7 @@ public class LongArrayListMap<V extends Identifiable<Long>> extends
 	public boolean remove(Object element) {
 		boolean removed = super.remove(element);
 
-		if (removed && element instanceof Identifiable<?>
+		if (removed && element instanceof Mappable<?>
 				&& ((V) element).getKeyIdentifier() != null)
 			idMap.remove(((V) element).getKeyIdentifier());
 

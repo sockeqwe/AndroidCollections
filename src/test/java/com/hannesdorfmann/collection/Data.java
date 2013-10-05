@@ -7,7 +7,7 @@ package com.hannesdorfmann.collection;
  * @author Hannes Dorfmann
  * 
  */
-public class Data<T> implements Identifiable<T> {
+public class Data<T> implements Mappable<T> {
 
 	public T id;
 
