@@ -16,7 +16,7 @@ public class Data<T> implements Mappable<T> {
 	}
 
 	@Override
-	public T getKeyIdentifier() {
+	public T getMapKey() {
 		return id;
 	}
 

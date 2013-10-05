@@ -20,7 +20,7 @@ public class ArrayListMapTest extends TestCase {
 			list.add(d);
 			inserted.add(d);
 			assertTrue(list.contains(d));
-			assertTrue(list.getById(d.getKeyIdentifier()) == d);
+			assertTrue(list.getById(d.getMapKey()) == d);
 
 		}
 
@@ -34,10 +34,10 @@ public class ArrayListMapTest extends TestCase {
 		// remove inserted
 		for (Data<String> d : inserted) {
 
-			list.removeById(d.getKeyIdentifier());
+			list.removeById(d.getMapKey());
 
 			assertFalse(list.contains(d));
-			assertNull(list.getById(d.getKeyIdentifier()));
+			assertNull(list.getById(d.getMapKey()));
 		}
 
 		assertTrue(list.size() == 0);
@@ -58,9 +58,9 @@ public class ArrayListMapTest extends TestCase {
 
 			assertFalse(list.contains(d));
 			assertTrue(list.contains(d2));
-			assertFalse(list.getById(d.getKeyIdentifier()) == d);
-			assertTrue(list.getById(d2.getKeyIdentifier()) == d2);
-			assertTrue(list.getById(d.getKeyIdentifier()) == d2);
+			assertFalse(list.getById(d.getMapKey()) == d);
+			assertTrue(list.getById(d2.getMapKey()) == d2);
+			assertTrue(list.getById(d.getMapKey()) == d2);
 			assertTrue(list.getById(Integer.toString(i)) == d2);
 
 			// remove original

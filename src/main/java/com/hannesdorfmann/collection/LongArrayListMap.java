@@ -61,18 +61,18 @@ public class LongArrayListMap<V extends Mappable<Long>> extends
 	@Override
 	public boolean add(V e) {
 
-		if (e.getKeyIdentifier() != null) {
+		if (e.getMapKey() != null) {
 
-			V oldValue = idMap.get(e.getKeyIdentifier());
+			V oldValue = idMap.get(e.getMapKey());
 			if (oldValue != null)
 				super.remove(oldValue);
 
 			boolean added = super.add(e);
 
 			if (added)
-				idMap.put(e.getKeyIdentifier(), e);
+				idMap.put(e.getMapKey(), e);
 			else
-				idMap.put(oldValue.getKeyIdentifier(), oldValue);
+				idMap.put(oldValue.getMapKey(), oldValue);
 
 			return added;
 		} else
@@ -88,9 +88,9 @@ public class LongArrayListMap<V extends Mappable<Long>> extends
 	@Override
 	public void add(int index, V e) {
 
-		if (e.getKeyIdentifier() != null) {
+		if (e.getMapKey() != null) {
 
-			V oldValue = idMap.get(e.getKeyIdentifier());
+			V oldValue = idMap.get(e.getMapKey());
 			if (oldValue != null) {
 				// there is already an elemenet with the same id
 				super.remove(oldValue);
@@ -98,7 +98,7 @@ public class LongArrayListMap<V extends Mappable<Long>> extends
 
 			super.add(index, e);
 
-			idMap.put(e.getKeyIdentifier(), e);
+			idMap.put(e.getMapKey(), e);
 		} else
 			super.add(index, e);
 	}
@@ -178,7 +178,7 @@ public class LongArrayListMap<V extends Mappable<Long>> extends
 		V v = super.remove(index);
 
 		if (v != null && !super.contains(v))
-			idMap.remove(v.getKeyIdentifier());
+			idMap.remove(v.getMapKey());
 
 		return v;
 	}
@@ -196,8 +196,8 @@ public class LongArrayListMap<V extends Mappable<Long>> extends
 		boolean removed = super.remove(element);
 
 		if (removed && element instanceof Mappable<?>
-				&& ((V) element).getKeyIdentifier() != null)
-			idMap.remove(((V) element).getKeyIdentifier());
+				&& ((V) element).getMapKey() != null)
+			idMap.remove(((V) element).getMapKey());
 
 		return removed;
 	}
@@ -210,9 +210,9 @@ public class LongArrayListMap<V extends Mappable<Long>> extends
 					"Try to replace element with index " + position
 							+ " but the size of this list is " + size());
 
-		if (e.getKeyIdentifier() != null) {
+		if (e.getMapKey() != null) {
 			V previous = get(position);
-			idMap.remove(previous.getKeyIdentifier());
+			idMap.remove(previous.getMapKey());
 
 			add(position, e);
 
