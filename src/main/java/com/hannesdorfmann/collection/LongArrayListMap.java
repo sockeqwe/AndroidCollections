@@ -148,12 +148,12 @@ public class LongArrayListMap<V extends Mappable<Long>> extends
 	}
 
 	@Override
-	public V getById(Long id) {
+	public V getByMapKey(Long id) {
 		return idMap.get(id);
 	}
 
 	@Override
-	public V removeById(Long id) {
+	public V removeByMapKey(Long id) {
 
 		V removed = idMap.get(id);
 

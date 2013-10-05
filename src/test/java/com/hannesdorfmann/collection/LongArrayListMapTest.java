@@ -20,24 +20,24 @@ public class LongArrayListMapTest extends TestCase {
 			list.add(d);
 			inserted.add(d);
 			assertTrue(list.contains(d));
-			assertTrue(list.getById(d.getMapKey()) == d);
+			assertTrue(list.getByMapKey(d.getMapKey()) == d);
 
 		}
 
 		// try to find inserted by key
 		for (long i = 0; i < tests; i++) {
 
-			Data<Long> d = list.getById(i);
+			Data<Long> d = list.getByMapKey(i);
 			assertTrue(inserted.contains(d));
 		}
 
 		// remove inserted
 		for (Data<Long> d : inserted) {
 
-			list.removeById(d.getMapKey());
+			list.removeByMapKey(d.getMapKey());
 
 			assertFalse(list.contains(d));
-			assertNull(list.getById(d.getMapKey()));
+			assertNull(list.getByMapKey(d.getMapKey()));
 		}
 
 		assertTrue(list.size() == 0);
@@ -58,10 +58,10 @@ public class LongArrayListMapTest extends TestCase {
 
 			assertFalse(list.contains(d));
 			assertTrue(list.contains(d2));
-			assertFalse(list.getById(d.getMapKey()) == d);
-			assertTrue(list.getById(d2.getMapKey()) == d2);
-			assertTrue(list.getById(d.getMapKey()) == d2);
-			assertTrue(list.getById(i) == d2);
+			assertFalse(list.getByMapKey(d.getMapKey()) == d);
+			assertTrue(list.getByMapKey(d2.getMapKey()) == d2);
+			assertTrue(list.getByMapKey(d.getMapKey()) == d2);
+			assertTrue(list.getByMapKey(i) == d2);
 
 			// remove original
 			list.remove(d);

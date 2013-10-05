@@ -160,12 +160,12 @@ public class ArrayListMap<K, V extends Mappable<K>> extends ArrayList<V>
 	}
 
 	@Override
-	public V getById(K id) {
+	public V getByMapKey(K id) {
 		return idMap.get(id);
 	}
 
 	@Override
-	public V removeById(K id) {
+	public V removeByMapKey(K id) {
 		V removed = idMap.remove(id);
 
 		if (removed != null) {

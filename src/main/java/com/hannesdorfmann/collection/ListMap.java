@@ -8,7 +8,7 @@ import java.util.Map;
  * simply iterate, like you would do with any {@link List} or get a item by his
  * list position. You can also search for an value by searching for his key
  * (id), like you would do with any {@link Map} implementation (
- * {@link #getById(Mappable)})
+ * {@link #getByMapKey(Mappable)})
  * 
  * @author Hannes Dorfmann
  * 
@@ -26,7 +26,7 @@ public interface ListMap<K, V extends Mappable<K>> extends List<V> {
 	 *            The values id.
 	 * @return
 	 */
-	public V getById(K id);
+	public V getByMapKey(K id);
 
 	/**
 	 * Remove all items in the list that matches have this key. More formally,
@@ -37,6 +37,6 @@ public interface ListMap<K, V extends Mappable<K>> extends List<V> {
 	 * @return The first element that has been found to be removed or null, if
 	 *         there is no such element
 	 */
-	public V removeById(K id);
+	public V removeByMapKey(K id);
 
 }
