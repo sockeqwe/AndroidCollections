@@ -2,6 +2,7 @@ package com.hannesdorfmann.collection;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class brings the best of both, {@link List} and {@link Map}. So you can
@@ -26,7 +27,17 @@ public interface ListMap<K, V extends Mappable<K>> extends List<V> {
 	 *            The values id.
 	 * @return
 	 */
-	public V getByMapKey(K id);
+	public Set<V> getByMapKey(K id);
+
+	/**
+	 * Calls {@link #getByMapKey(Object)} but returns just the first one. Useful
+	 * for scenarios, where you are absolutely sure that there is only one
+	 * element with the given key, so you can use this short cut.
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public V getFirstByMapKey(K id);
 
 	/**
 	 * Remove all items in the list that matches have this key. More formally,
@@ -37,6 +48,6 @@ public interface ListMap<K, V extends Mappable<K>> extends List<V> {
 	 * @return The first element that has been found to be removed or null, if
 	 *         there is no such element
 	 */
-	public V removeByMapKey(K id);
+	public Set<V> removeByMapKey(K id);
 
 }

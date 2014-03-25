@@ -1,6 +1,5 @@
 package com.hannesdorfmann.collection;
 
-
 /**
  * Simple class to do some unit testing on {@link ListMap} implementations
  * 
@@ -18,6 +17,11 @@ public class Data<T> implements Mappable<T> {
 	@Override
 	public T getMapKey() {
 		return id;
+	}
+
+	@Override
+	public String toString() {
+		return "" + id;
 	}
 
 }

@@ -10,12 +10,12 @@ import java.util.Set;
 
 import org.junit.Test;
 
-public class ArrayListMapTest {
+public class UniqueArrayListMapTest {
 
 	@Test
 	public void test() {
 
-		ListMap<String, Data<String>> list = new ArrayListMap<String, Data<String>>();
+		ListMap<String, Data<String>> list = new UniqueArrayListMap<String, Data<String>>();
 		List<Data<String>> inserted = new ArrayList<Data<String>>();
 
 		int tests = 10000;
@@ -26,22 +26,17 @@ public class ArrayListMapTest {
 			list.add(d);
 			inserted.add(d);
 			assertTrue(list.contains(d));
-			Set<Data<String>> founds = list.getByMapKey(d.getMapKey());
-			assertTrue(founds.contains(d));
-
-			assertTrue(list.getFirstByMapKey(d.getMapKey()) == d);
+			Set<Data<String>> found = list.getByMapKey(d.getMapKey());
+			assertTrue(found.contains(d));
 
 		}
 
 		// try to find inserted by key
 		for (int i = 0; i < tests; i++) {
 
-			Set<Data<String>> founds = list.getByMapKey(Integer.toString(i));
-
-			for (Data<String> f : founds) {
-				assertTrue(inserted.contains(f));
-			}
-
+			Set<Data<String>> found = list.getByMapKey(Integer.toString(i));
+			assertTrue(found.size() == 1);
+			assertTrue(inserted.containsAll(found));
 		}
 
 		// remove inserted
@@ -69,25 +64,19 @@ public class ArrayListMapTest {
 			list.add(d2);
 			inserted.add(d2);
 
-			assertTrue(list.contains(d));
+			assertFalse(list.contains(d));
 			assertTrue(list.contains(d2));
-
-			Set<Data<String>> found = list.getByMapKey(Integer.toString(i));
-
-			assertTrue(found.contains(d));
-			assertTrue(found.contains(d2));
-
-			assertTrue(list.getFirstByMapKey(Integer.toString(i)) == d);
+			assertFalse(list.getByMapKey(d.getMapKey()).contains(d));
+			assertFalse(list.getFirstByMapKey(d.getMapKey()) == d);
+			assertTrue(list.getFirstByMapKey(d2.getMapKey()) == d2);
+			assertTrue(list.getByMapKey(d2.getMapKey()).contains(d2));
+			assertTrue(list.getFirstByMapKey(d.getMapKey()) == d2);
+			assertTrue(list.getFirstByMapKey(Integer.toString(i)) == d2);
+			assertTrue(list.getByMapKey(d2.getMapKey()).contains(d2));
 
 			// remove original
 			list.remove(d);
 			inserted.remove(d);
-
-			found = list.getByMapKey(Integer.toString(i));
-
-			assertFalse(found.contains(d));
-			assertTrue(found.contains(d2));
-			assertTrue(list.getFirstByMapKey(Integer.toString(i)) == d2);
 
 		}
 

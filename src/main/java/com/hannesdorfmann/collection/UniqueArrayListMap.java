@@ -2,33 +2,52 @@ package com.hannesdorfmann.collection;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import com.hannesdorfmann.collection.support.v4.util.LongSparseArray;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * This is a {@link ListMap} implementation that maps Long to a Object. This
- * implementation uses a
- * {@link com.hannesdorfmann.collection.support.v4.util.LongSparseArray} and an
- * {@link ArrayList} as internal data structure.
+ * This {@link ListMap} implementation uses {@link ArrayList} and
+ * {@link HashMap} and its not thread safe.
  * 
+ * <p>
+ * Unlike a normal List implementation, every item is unique ( proved by
+ * {@link Mappable#getMapKey()} in this list. So its more like a Set that
+ * contains his insert order than a List.
+ * </p>
+ * 
+ * <p>
+ * So this kind of {@link ListMap} gives you a {@link HashMap} to retrieve a
+ * element by his id (key) and a {@link ArrayList} at the same time to get a
+ * item very fast by his position in the list. So you will have O(1) for
+ * retrieving a element by his id and O(1) to access item at a certain position
+ * (index) in the list.
+ * </p>
  * 
  * @author Hannes Dorfmann
  * 
+ * @param <K>
+ *            The Key
  * @param <V>
+ *            The Value
  */
-public class LongArrayListMap<V extends Mappable<Long>> extends
-		ArrayList<V> implements ListMap<Long, V> {
+public class UniqueArrayListMap<K, V extends Mappable<K>> extends ArrayList<V>
+		implements ListMap<K, V> {
 
-	private static final long serialVersionUID = 2175336878139990835L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4630450968498105177L;
 
-	private final LongSparseArray<V> idMap;
+	private final Map<K, V> idMap;
 
 	/**
 	 * Creates a new empty empty {@link ArrayListMap}
 	 */
-	public LongArrayListMap() {
+	public UniqueArrayListMap() {
 		super();
-		idMap = new LongSparseArray<V>();
+		idMap = new HashMap<K, V>();
 	}
 
 	/**
@@ -38,18 +57,16 @@ public class LongArrayListMap<V extends Mappable<Long>> extends
 	 * 
 	 * @param c
 	 */
-	public LongArrayListMap(Collection<? extends V> c) {
-		super(c);
-		idMap = new LongSparseArray<V>(c.size());
-
-		for (V v : c)
+	public UniqueArrayListMap(Collection<? extends V> c) {
+		idMap = new HashMap<K, V>(c.size());
+		for (V v : c) {
 			add(v);
-
+		}
 	}
 
-	public LongArrayListMap(int initialCapacity) {
+	public UniqueArrayListMap(int initialCapacity) {
 		super(initialCapacity);
-		idMap = new LongSparseArray<V>(initialCapacity);
+		idMap = new HashMap<K, V>(initialCapacity);
 	}
 
 	/**
@@ -64,19 +81,22 @@ public class LongArrayListMap<V extends Mappable<Long>> extends
 		if (e.getMapKey() != null) {
 
 			V oldValue = idMap.get(e.getMapKey());
-			if (oldValue != null)
+			if (oldValue != null) {
 				super.remove(oldValue);
+			}
 
 			boolean added = super.add(e);
 
-			if (added)
+			if (added) {
 				idMap.put(e.getMapKey(), e);
-			else
+			} else {
 				idMap.put(oldValue.getMapKey(), oldValue);
+			}
 
 			return added;
-		} else
+		} else {
 			return super.add(e);
+		}
 	}
 
 	/**
@@ -89,7 +109,6 @@ public class LongArrayListMap<V extends Mappable<Long>> extends
 	public void add(int index, V e) {
 
 		if (e.getMapKey() != null) {
-
 			V oldValue = idMap.get(e.getMapKey());
 			if (oldValue != null) {
 				// there is already an elemenet with the same id
@@ -99,8 +118,9 @@ public class LongArrayListMap<V extends Mappable<Long>> extends
 			super.add(index, e);
 
 			idMap.put(e.getMapKey(), e);
-		} else
+		} else {
 			super.add(index, e);
+		}
 	}
 
 	/**
@@ -113,8 +133,10 @@ public class LongArrayListMap<V extends Mappable<Long>> extends
 	 */
 	@Override
 	public boolean addAll(Collection<? extends V> c) {
-		for (V v : c)
+
+		for (V v : c) {
 			add(v);
+		}
 
 		return true;
 	}
@@ -135,7 +157,6 @@ public class LongArrayListMap<V extends Mappable<Long>> extends
 		}
 
 		return true;
-
 	}
 
 	/**
@@ -148,23 +169,33 @@ public class LongArrayListMap<V extends Mappable<Long>> extends
 	}
 
 	@Override
-	public V getByMapKey(Long id) {
-		return idMap.get(id);
+	public Set<V> getByMapKey(K id) {
+		V value = idMap.get(id);
+		if (value == null) {
+			return null;
+		}
+
+		Set<V> set = new LinkedHashSet<V>();
+		set.add(value);
+
+		return set;
+
 	}
 
 	@Override
-	public V removeByMapKey(Long id) {
-
-		V removed = idMap.get(id);
+	public Set<V> removeByMapKey(K id) {
+		V removed = idMap.remove(id);
 
 		if (removed != null) {
-			idMap.delete(id);
 			int index;
-			while ((index = super.indexOf(removed)) >= 0)
+			while ((index = super.indexOf(removed)) >= 0) {
 				super.remove(index);
+			}
 		}
 
-		return removed;
+		Set<V> set = new LinkedHashSet<V>();
+		set.add(removed);
+		return set;
 	}
 
 	/**
@@ -177,8 +208,9 @@ public class LongArrayListMap<V extends Mappable<Long>> extends
 	public V remove(int index) {
 		V v = super.remove(index);
 
-		if (v != null && !super.contains(v))
+		if (v != null && v.getMapKey() != null) {
 			idMap.remove(v.getMapKey());
+		}
 
 		return v;
 	}
@@ -196,30 +228,58 @@ public class LongArrayListMap<V extends Mappable<Long>> extends
 		boolean removed = super.remove(element);
 
 		if (removed && element instanceof Mappable<?>
-				&& ((V) element).getMapKey() != null)
+				&& ((V) element).getMapKey() != null) {
 			idMap.remove(((V) element).getMapKey());
+		}
 
 		return removed;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public V set(int position, V e) {
+	public boolean contains(Object value) {
 
-		if (position >= size())
-			throw new IndexOutOfBoundsException(
-					"Try to replace element with index " + position
-							+ " but the size of this list is " + size());
+		if (value instanceof Mappable && ((V) value).getMapKey() != null) {
+			V found = idMap.get(((Mappable<K>) value).getMapKey());
+			if (found == value) {
+				return true;
+			}
+		}
 
-		if (e.getMapKey() != null) {
-			V previous = get(position);
-			idMap.remove(previous.getMapKey());
-
-			add(position, e);
-
-			return previous;
-		} else
-			return super.set(position, e);
+		return super.contains(value);
 
 	}
 
+	/**
+	 * Replaces the
+	 * 
+	 * @param position
+	 * @param e
+	 * @return
+	 */
+	@Override
+	public V set(int position, V e) {
+
+		if (position >= size()) {
+			throw new IndexOutOfBoundsException(
+					"Try to replace element with index " + position
+							+ " but the size of this list is " + size());
+		}
+
+		V previous = get(position);
+
+		if (e.getMapKey() != null) {
+			idMap.remove(previous.getMapKey());
+		}
+
+		add(position, e);
+
+		return previous;
+
+	}
+
+	@Override
+	public V getFirstByMapKey(K id) {
+		return idMap.get(id);
+	}
 }

@@ -3,16 +3,17 @@ package com.hannesdorfmann.collection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This {@link ListMap} implementation uses {@link ArrayList} and
  * {@link HashMap} and its not thread safe.
  * 
  * <p>
- * Unlike a normal List implementation, every item is unique ( proved by
- * {@link Mappable#getMapKey()} in this list. So its more like a Set
- * that contains his insert order than a List.
+ * Like a normal List implementation, every item can be contained multiple times
+ * in the list.
  * </p>
  * 
  * <p>
@@ -38,14 +39,14 @@ public class ArrayListMap<K, V extends Mappable<K>> extends ArrayList<V>
 	 */
 	private static final long serialVersionUID = 4630450968498105177L;
 
-	private final Map<K, V> idMap;
+	private final Map<K, Set<V>> idMap;
 
 	/**
 	 * Creates a new empty empty {@link ArrayListMap}
 	 */
 	public ArrayListMap() {
 		super();
-		idMap = new HashMap<K, V>();
+		idMap = new HashMap<K, Set<V>>();
 	}
 
 	/**
@@ -56,14 +57,15 @@ public class ArrayListMap<K, V extends Mappable<K>> extends ArrayList<V>
 	 * @param c
 	 */
 	public ArrayListMap(Collection<? extends V> c) {
-		idMap = new HashMap<K, V>(c.size());
-		for (V v : c)
+		idMap = new HashMap<K, Set<V>>(c.size());
+		for (V v : c) {
 			add(v);
+		}
 	}
 
 	public ArrayListMap(int initialCapacity) {
 		super(initialCapacity);
-		idMap = new HashMap<K, V>(initialCapacity);
+		idMap = new HashMap<K, Set<V>>(initialCapacity);
 	}
 
 	/**
@@ -77,20 +79,23 @@ public class ArrayListMap<K, V extends Mappable<K>> extends ArrayList<V>
 
 		if (e.getMapKey() != null) {
 
-			V oldValue = idMap.get(e.getMapKey());
-			if (oldValue != null)
-				super.remove(oldValue);
+			Set<V> listForKey = idMap.get(e.getMapKey());
+
+			if (listForKey == null) {
+				listForKey = new LinkedHashSet<V>(1);
+				idMap.put(e.getMapKey(), listForKey);
+			}
 
 			boolean added = super.add(e);
 
-			if (added)
-				idMap.put(e.getMapKey(), e);
-			else
-				idMap.put(oldValue.getMapKey(), oldValue);
+			if (added) {
+				listForKey.add(e);
+			}
 
 			return added;
-		} else
+		} else {
 			return super.add(e);
+		}
 	}
 
 	/**
@@ -103,17 +108,21 @@ public class ArrayListMap<K, V extends Mappable<K>> extends ArrayList<V>
 	public void add(int index, V e) {
 
 		if (e.getMapKey() != null) {
-			V oldValue = idMap.get(e.getMapKey());
-			if (oldValue != null) {
-				// there is already an elemenet with the same id
-				super.remove(oldValue);
+
+			Set<V> listForKey = idMap.get(e.getMapKey());
+
+			if (listForKey == null) {
+				listForKey = new LinkedHashSet<V>(1);
+				idMap.put(e.getMapKey(), listForKey);
 			}
 
 			super.add(index, e);
 
-			idMap.put(e.getMapKey(), e);
-		} else
+			listForKey.add(e);
+
+		} else {
 			super.add(index, e);
+		}
 	}
 
 	/**
@@ -127,8 +136,9 @@ public class ArrayListMap<K, V extends Mappable<K>> extends ArrayList<V>
 	@Override
 	public boolean addAll(Collection<? extends V> c) {
 
-		for (V v : c)
+		for (V v : c) {
 			add(v);
+		}
 
 		return true;
 	}
@@ -144,8 +154,9 @@ public class ArrayListMap<K, V extends Mappable<K>> extends ArrayList<V>
 	@Override
 	public boolean addAll(int index, Collection<? extends V> c) {
 
-		for (V v : c)
+		for (V v : c) {
 			add(index++, v);
+		}
 
 		return true;
 	}
@@ -160,18 +171,24 @@ public class ArrayListMap<K, V extends Mappable<K>> extends ArrayList<V>
 	}
 
 	@Override
-	public V getByMapKey(K id) {
+	public Set<V> getByMapKey(K id) {
 		return idMap.get(id);
 	}
 
 	@Override
-	public V removeByMapKey(K id) {
-		V removed = idMap.remove(id);
+	public Set<V> removeByMapKey(K id) {
+		Set<V> removed = idMap.remove(id);
 
 		if (removed != null) {
+
 			int index;
-			while ((index = super.indexOf(removed)) >= 0)
-				super.remove(index);
+			for (V v : removed) {
+
+				index = -1;
+				while ((index = super.indexOf(v)) >= 0) {
+					super.remove(index);
+				}
+			}
 		}
 
 		return removed;
@@ -188,7 +205,16 @@ public class ArrayListMap<K, V extends Mappable<K>> extends ArrayList<V>
 		V v = super.remove(index);
 
 		if (v != null && v.getMapKey() != null) {
-			idMap.remove(v.getMapKey());
+
+			Set<V> removeList = idMap.get(v.getMapKey());
+
+			if (removeList != null) {
+				removeList.remove(v);
+
+				if (removeList.isEmpty()) {
+					idMap.remove(v.getMapKey());
+				}
+			}
 		}
 
 		return v;
@@ -207,8 +233,22 @@ public class ArrayListMap<K, V extends Mappable<K>> extends ArrayList<V>
 		boolean removed = super.remove(element);
 
 		if (removed && element instanceof Mappable<?>
-				&& ((V) element).getMapKey() != null)
-			idMap.remove(((V) element).getMapKey());
+				&& ((V) element).getMapKey() != null) {
+
+			K key = ((V) element).getMapKey();
+			Set<V> toRemove = idMap.get(key);
+
+			if (toRemove != null) {
+
+				toRemove.remove(element);
+
+				if (toRemove.isEmpty()) {
+					idMap.remove(key);
+				}
+				return true;
+			}
+
+		}
 
 		return removed;
 	}
@@ -217,11 +257,18 @@ public class ArrayListMap<K, V extends Mappable<K>> extends ArrayList<V>
 	@Override
 	public boolean contains(Object value) {
 
-		if (value instanceof Mappable
-				&& ((V) value).getMapKey() != null) {
-			V found = idMap.get(((Mappable<K>) value).getMapKey());
-			if (found == value)
-				return true;
+		if (value instanceof Mappable && ((V) value).getMapKey() != null) {
+
+			Set<V> found = idMap.get(((Mappable<K>) value).getMapKey());
+
+			if (found != null && !found.isEmpty()) {
+				boolean foundInKeyMap = found.contains(value);
+
+				if (foundInKeyMap) {
+					return true;
+				}
+
+			}
 		}
 
 		return super.contains(value);
@@ -229,7 +276,7 @@ public class ArrayListMap<K, V extends Mappable<K>> extends ArrayList<V>
 	}
 
 	/**
-	 * Replaces the
+	 * Replaces the item at the current position
 	 * 
 	 * @param position
 	 * @param e
@@ -238,19 +285,47 @@ public class ArrayListMap<K, V extends Mappable<K>> extends ArrayList<V>
 	@Override
 	public V set(int position, V e) {
 
-		if (position >= size())
+		if (position >= size()) {
 			throw new IndexOutOfBoundsException(
 					"Try to replace element with index " + position
 							+ " but the size of this list is " + size());
+		}
 
 		V previous = get(position);
 
-		if (e.getMapKey() != null)
-			idMap.remove(previous.getMapKey());
+		K key = previous.getMapKey();
+
+		if (key != null) {
+			Set<V> prevList = idMap.get(key);
+			if (prevList != null) {
+				prevList.remove(previous);
+
+				if (prevList.isEmpty()) {
+					idMap.remove(key);
+				}
+			}
+		}
 
 		add(position, e);
+		remove(position + 1);
 
 		return previous;
 
+	}
+
+	@Override
+	public V getFirstByMapKey(K id) {
+
+		Set<V> founds = getByMapKey(id);
+
+		if (founds == null || founds.isEmpty()) {
+			return null;
+		}
+
+		for (V v : founds) {
+			return v;
+		}
+
+		return null;
 	}
 }
